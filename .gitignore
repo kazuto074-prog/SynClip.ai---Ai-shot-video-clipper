@@ -28,4 +28,5 @@ models/
 test_*.py
 download_models.py
 powershell.bat
+push_to_git.bat
 
