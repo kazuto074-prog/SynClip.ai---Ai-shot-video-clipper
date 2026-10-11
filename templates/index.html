@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynClip.ai - AI Short Video Clipper</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            craft: {
+              bg: '#080a11',
+              sidebar: '#0d101d',
+              card: '#111625',
+              cardHover: '#161c2e',
+              input: '#131826',
+              border: '#1f263c',
+              borderLight: '#2a3450',
+              magenta: '#d946ef',
+              purple: '#8b5cf6',
+              cyan: '#06b6d4',
+              blue: '#3b82f6',
+              gold: '#eab308'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080a11;
+      color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* SynClip.ai Signature Gradients */
+    .btn-clipcraft {
+      background: linear-gradient(135deg, #c026d3 0%, #a855f7 50%, #6366f1 100%);
+      box-shadow: 0 4px 20px rgba(192, 38, 211, 0.4);
+      transition: all 0.25s ease;
+    }
+    .btn-clipcraft:hover {
+      box-shadow: 0 6px 28px rgba(192, 38, 211, 0.65);
+      transform: translateY(-1px);
+    }
+
+    .active-nav-pill {
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c026d3 100%);
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.4);
+    }
+
+    .glow-card {
+      border: 1px solid #1f263c;
+      transition: all 0.25s ease;
+    }
+    .glow-card:hover {
+      border-color: #8b5cf6;
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .hero-glow-1 {
+      position: absolute;
+      width: 650px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(192, 38, 211, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 75%);
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-glow-2 {
+      position: absolute;
+      width: 500px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(139, 92, 246, 0.06) 50%, transparent 70%);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080a11;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f263c;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b4566;
+    }
+  </style>
+</head>
+<body class="flex h-screen w-screen overflow-hidden bg-craft-bg">
+
+  <!-- =============================================================== -->
+  <!-- 1. LEFT SIDEBAR                                                 -->
+  <!-- =============================================================== -->
+  <aside class="w-60 bg-craft-sidebar border-r border-craft-border flex flex-col justify-between p-4 flex-shrink-0 z-20">
+    <div class="space-y-6">
+      
+      <!-- Logo: SynClip.ai -->
+      <div class="flex items-center space-x-3 px-2 pt-1 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-fuchsia-500 via-purple-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-600/30">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            <path d="M19 12L12 7"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-extrabold tracking-tight text-white leading-none">
+            SynClip<span class="text-craft-magenta">.ai</span>
+          </h1>
+          <p class="text-[8.5px] font-bold tracking-widest text-slate-400 uppercase mt-0.5">AI SHORT VIDEO CLIPPER</p>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="space-y-1.5 pt-1">
+        <a href="#home" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-white active-nav-pill transition">
+          <i data-lucide="home" class="w-4 h-4"></i>
+          <span>Home</span>
+        </a>
+
+        <a href="#home" onclick="document.getElementById('ytInput').focus()" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-craft-card transition">
+          <i data-lucide="scissors" class="w-4 h-4"></i>
+          <span>Clip Video</span>
+        </a>
+
+        <a href="#resultsSection" onclick="scrollToMyClips()" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-craft-card transition">
+          <i data-lucide="film" class="w-4 h-4"></i>
+          <span>My Clips</span>
+        </a>
+
+        <button onclick="toggleFrameworkMenu()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-craft-card transition">
+          <span class="flex items-center space-x-3">
+            <i data-lucide="captions" class="w-4 h-4"></i>
+            <span>AI Captions</span>
+          </span>
+          <span class="text-[10px] bg-craft-border px-1.5 py-0.5 rounded text-emerald-400 font-semibold">Active</span>
+        </button>
+
+        <button onclick="toggleFrameworkMenu()" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-craft-card transition">
+          <span class="flex items-center space-x-3">
+            <i data-lucide="crop" class="w-4 h-4"></i>
+            <span>Auto Reframe</span>
+          </span>
+          <span class="text-[10px] bg-pink-500/20 text-pink-400 px-1.5 py-0.5 rounded font-semibold" id="sidebarFrameworkName">9:16</span>
+        </button>
+
+        <button onclick="toggleSettingsModal()" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-craft-card transition">
+          <i data-lucide="wand-2" class="w-4 h-4 text-purple-400"></i>
+          <span>AI Tools</span>
+        </button>
+      </nav>
+
+      <!-- Video Framing Selector Drawer -->
+      <div id="frameworkDrawer" class="bg-craft-card/90 border border-craft-border rounded-xl p-3 space-y-1.5 text-xs">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+          <span>Aspect Ratio Framing</span>
+        </div>
+        <button onclick="setFramework('9:16_blurred', '9:16 Podcast (Blur)', this)" class="fw-opt w-full text-left px-2.5 py-1.5 rounded-lg text-white bg-craft-border/70 font-semibold text-[11px] flex items-center justify-between">
+          <span>📱 9:16 Podcast (Blur)</span>
+          <span class="text-[9px] text-pink-400">Default</span>
+        </button>
+        <button onclick="setFramework('9:16_face', '9:16 Face Tracker', this)" class="fw-opt w-full text-left px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-craft-border/40 text-[11px]">
+          <span>👤 9:16 Face Tracker</span>
+        </button>
+        <button onclick="setFramework('9:16_split', '9:16 Split Screen', this)" class="fw-opt w-full text-left px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-craft-border/40 text-[11px]">
+          <span>👥 9:16 Split Screen</span>
+        </button>
+        <button onclick="setFramework('1:1_square', '1:1 Square', this)" class="fw-opt w-full text-left px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-craft-border/40 text-[11px]">
+          <span>⏹️ 1:1 Square Feed</span>
+        </button>
+        <button onclick="setFramework('16:9_original', '16:9 Landscape', this)" class="fw-opt w-full text-left px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-craft-border/40 text-[11px]">
+          <span>🖥️ 16:9 Landscape</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- GPU Local Studio Badge (NO "Upgrade to Pro") -->
+    <div class="bg-craft-card border border-craft-border rounded-2xl p-3 space-y-2">
+      <div class="flex items-center justify-between text-xs font-semibold">
+        <span class="text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400"></i> Local Engine
+        </span>
+        <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          CUDA 12
+        </span>
+      </div>
+      <p class="text-xs font-bold text-white truncate" id="gpuStatusText">NVIDIA RTX 3050 6GB</p>
+      <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-craft-border">
+        <span>Whisper + NVENC</span>
+        <span class="text-pink-400 font-semibold">100% Free & Unlimited</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =============================================================== -->
+  <!-- 2. MAIN APP SCROLLABLE VIEWPORT                                 -->
+  <!-- =============================================================== -->
+  <div class="flex-1 flex flex-col overflow-y-auto relative">
+    
+    <!-- Top Header Bar -->
+    <header class="h-14 border-b border-craft-border/60 flex items-center justify-between px-8 flex-shrink-0 bg-craft-bg/95 backdrop-blur-md sticky top-0 z-30">
+      <div class="flex items-center space-x-2 text-xs font-semibold text-slate-400">
+        <span class="text-slate-300">Studio Workspace</span>
+        <span class="text-slate-600">/</span>
+        <span class="text-craft-magenta">AI Video Clipper</span>
+      </div>
+
+      <!-- Right Header Items -->
+      <div class="flex items-center space-x-3">
+        <button onclick="toggleSettingsModal()" class="px-3 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs font-semibold text-slate-300 hover:text-white hover:border-craft-magenta transition flex items-center gap-2 cursor-pointer" title="AI Parameters & Studio Settings">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 text-craft-magenta"></i>
+          <span>Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="p-8 max-w-5xl mx-auto w-full space-y-12 relative" id="home">
+      
+      <!-- Glowing Background Radial Blobs -->
+      <div class="hero-glow-1 top-8 left-1/4 -translate-x-1/2"></div>
+      <div class="hero-glow-2 top-24 right-1/4"></div>
+
+      <!-- ============================================================= -->
+      <!-- HERO BANNER (Clean, Centered, Focused Studio Workspace)       -->
+      <!-- ============================================================= -->
+      <section class="relative z-10 pt-4 flex flex-col items-center text-center space-y-6">
+        
+        <!-- Top Pill Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-craft-card border border-craft-border text-xs font-semibold text-slate-300 shadow-sm">
+          <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13"></path>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span class="tracking-widest uppercase text-[11px] font-bold text-slate-300">Turn Long Videos into Viral Shorts</span>
+        </div>
+
+        <!-- Hero Headline -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] max-w-3xl">
+          From Long Videos to <span class="bg-gradient-to-r from-purple-400 via-craft-magenta to-cyan-400 bg-clip-text text-transparent">Viral Shorts</span> with AI ✨
+        </h1>
+
+        <!-- Hero Subtitle -->
+        <p class="text-sm sm:text-base text-slate-400 max-w-2xl leading-relaxed">
+          Paste a YouTube link and let AI find the best moments, add captions, and create ready-to-post Shorts, Reels and TikToks.
+        </p>
+
+        <!-- Studio Input Box -->
+        <div class="w-full max-w-2xl bg-craft-card border border-craft-border rounded-2xl p-3 shadow-2xl shadow-purple-950/20 space-y-2 text-left">
+          
+          <div class="flex items-center gap-2">
+            <!-- YouTube Icon in Red Box -->
+            <div class="w-11 h-11 rounded-xl bg-red-600/15 text-red-500 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="youtube" class="w-6 h-6 fill-current"></i>
+            </div>
+
+            <!-- Input Field -->
+            <input 
+              type="text" 
+              id="ytInput"
+              placeholder="Paste YouTube video link here..." 
+              class="flex-1 bg-transparent text-sm text-white placeholder-slate-500 outline-none font-medium px-2"
+              onkeydown="if(event.key === 'Enter') startGeneration()"
+            />
+
+            <!-- Local Video Upload Icon -->
+            <label class="p-2.5 text-slate-400 hover:text-white cursor-pointer rounded-lg hover:bg-craft-input transition" title="Or upload local MP4 video file">
+              <i data-lucide="folder-up" class="w-5 h-5"></i>
+              <input type="file" id="localFileInput" accept="video/*" class="hidden" onchange="handleFileUpload(event)">
+            </label>
+
+            <!-- CTA Button: "Get Viral Clips →" -->
+            <button 
+              id="mainGenerateBtn"
+              onclick="startGeneration()" 
+              class="btn-clipcraft text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-xl flex items-center gap-2 cursor-pointer flex-shrink-0">
+              <span>Get Viral Clips</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Example Link Subtitle -->
+          <div class="flex items-center justify-between px-2 text-[11px] text-slate-400 pt-1">
+            <span class="truncate">e.g. <span class="text-slate-300 font-mono">https://www.youtube.com/watch?v=dQw4w9WgXcQ</span></span>
+            <span id="uploadStatusText" class="text-pink-400 font-semibold hidden truncate max-w-[240px]"></span>
+          </div>
+        </div>
+
+        <!-- Feature Pills Row -->
+        <div class="flex flex-wrap justify-center items-center gap-3 pt-2">
+          <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs text-slate-300 shadow-sm">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>AI Finds Best Moments</span>
+          </div>
+          <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs text-slate-300 shadow-sm">
+            <i data-lucide="captions" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Auto Captions</span>
+          </div>
+          <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs text-slate-300 shadow-sm">
+            <i data-lucide="crop" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>9:16 Auto Reframe</span>
+          </div>
+          <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs text-slate-300 shadow-sm">
+            <i data-lucide="volume-x" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>Remove Silence</span>
+          </div>
+          <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-craft-card border border-craft-border text-xs text-slate-300 shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-craft-magenta"></i>
+            <span>Ready to Post in Seconds</span>
+          </div>
+        </div>
+
+        <!-- Live Progress Container (When Processing) -->
+        <div id="liveProgressContainer" class="w-full max-w-2xl bg-craft-card border border-craft-magenta/50 rounded-2xl p-5 shadow-2xl space-y-3 text-left hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-craft-magenta/20 text-craft-magenta flex items-center justify-center">
+                <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider" id="progressTitle">Analyzing Video Stream...</h4>
+                <p class="text-[11px] text-slate-400" id="progressSub">Downloading audio and transcribing on RTX 3050</p>
+              </div>
+            </div>
+            <span class="text-lg font-extrabold text-craft-magenta font-mono" id="progressPercentage">0%</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-craft-input overflow-hidden">
+            <div id="progressBarFill" class="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 2: HOW IT WORKS (4-Step Cards)                        -->
+      <!-- ============================================================= -->
+      <section class="space-y-4 pt-4" id="how">
+        <div class="flex items-center justify-between">
+          <div class="flex items-baseline gap-3">
+            <h3 class="text-xl font-extrabold text-white">How It Works</h3>
+            <span class="text-xs text-slate-400 font-medium">Simple steps. Powerful results.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+          
+          <!-- Step 1 -->
+          <div class="bg-craft-card border border-craft-border rounded-2xl p-5 space-y-3 glow-card relative">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center">
+                <i data-lucide="link" class="w-5 h-5"></i>
+              </div>
+              <span class="text-xs font-bold text-slate-400 font-mono bg-craft-input px-2 py-0.5 rounded-md border border-craft-border">01</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">Paste YouTube Link</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Add any YouTube video (link to podcast, vlog, interview, lecture, etc.)
+            </p>
+            <div class="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-slate-600">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="bg-craft-card border border-craft-border rounded-2xl p-5 space-y-3 glow-card relative">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center">
+                <i data-lucide="bot" class="w-5 h-5"></i>
+              </div>
+              <span class="text-xs font-bold text-slate-400 font-mono bg-craft-input px-2 py-0.5 rounded-md border border-craft-border">02</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">AI Analyzes Video</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Our AI finds the most engaging moments automatically with Faster-Whisper.
+            </p>
+            <div class="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-slate-600">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="bg-craft-card border border-craft-border rounded-2xl p-5 space-y-3 glow-card relative">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-pink-500/15 text-pink-400 flex items-center justify-center">
+                <i data-lucide="scissors" class="w-5 h-5"></i>
+              </div>
+              <span class="text-xs font-bold text-slate-400 font-mono bg-craft-input px-2 py-0.5 rounded-md border border-craft-border">03</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">Clips are Generated</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Get multiple ready-to-edit short videos with captions and effects.
+            </p>
+            <div class="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-slate-600">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="bg-craft-card border border-craft-border rounded-2xl p-5 space-y-3 glow-card">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center">
+                <i data-lucide="upload" class="w-5 h-5"></i>
+              </div>
+              <span class="text-xs font-bold text-slate-400 font-mono bg-craft-input px-2 py-0.5 rounded-md border border-craft-border">04</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">Download & Post</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Export and share directly to YouTube Shorts, Instagram Reels or TikTok.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 3: YOUR GENERATED CLIPS (Active Output Gallery)       -->
+      <!-- ============================================================= -->
+      <section id="resultsSection" class="space-y-4 pt-4 pb-12 hidden">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+            <h3 class="text-xl font-extrabold text-white">Your Generated Clips</h3>
+            <span id="outputCountBadge" class="bg-pink-500/20 text-pink-300 text-xs px-2.5 py-0.5 rounded-full font-bold">0 Clips</span>
+          </div>
+          <button onclick="clearAllResults()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear
+          </button>
+        </div>
+
+        <!-- Dynamic Output Grid -->
+        <div id="clipsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- 3. ADVANCED OPTIONS / AI TOOLS MODAL                            -->
+  <!-- =============================================================== -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden">
+    <div class="bg-craft-card border border-craft-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-craft-border">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-craft-magenta"></i>
+          AI Parameters & Studio Settings
+        </h3>
+        <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Google Gemini API Key (Optional)</label>
+          <input type="password" id="modalApiKey" value="" placeholder="Enter your Gemini API key (optional for AI Highlights & SEO)" class="w-full bg-craft-input border border-craft-border rounded-xl px-3 py-2 text-white outline-none focus:border-craft-magenta font-mono">
+          <p class="text-[10px] text-slate-400 mt-1">Optional. Powers Gemini 3.8 Flash for viral hooks & SEO tags. Falls back to offline heuristics if blank.</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Whisper Model (NVIDIA RTX 3050 CUDA)</label>
+          <select id="modalWhisperModel" class="w-full bg-craft-input border border-craft-border rounded-xl px-3 py-2 text-white outline-none">
+            <option value="base" selected>base (Fastest & Highly Accurate - Recommended)</option>
+            <option value="small">small (Balanced)</option>
+            <option value="medium">medium (High Quality)</option>
+            <option value="tiny">tiny (Ultra Fast)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Number of Clips: <span id="countVal" class="text-craft-magenta font-bold">3</span></label>
+            <input type="range" id="modalClipCount" min="1" max="6" value="3" class="w-full accent-craft-magenta" oninput="document.getElementById('countVal').innerText = this.value">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Duration Range (Seconds)</label>
+            <div class="flex gap-2">
+              <input type="number" id="modalMinDur" value="20" min="10" max="60" class="w-1/2 bg-craft-input border border-craft-border rounded-lg px-2 py-1 text-white text-center">
+              <input type="number" id="modalMaxDur" value="60" min="20" max="120" class="w-1/2 bg-craft-input border border-craft-border rounded-lg px-2 py-1 text-white text-center">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-craft-border flex justify-end">
+        <button onclick="toggleSettingsModal()" class="btn-clipcraft text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- JAVASCRIPT APP LOGIC                                            -->
+  <!-- =============================================================== -->
+  <script>
+    let activeFramework = '9:16_blurred';
+    let uploadedFilePath = null;
+
+    lucide.createIcons();
+
+    // Auto-load existing recent clips on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      loadRecentClips(false);
+    });
+
+    async function loadRecentClips(scrollIntoView = false) {
+      try {
+        const res = await fetch('/api/recent_clips');
+        const data = await res.json();
+        if (data.clips && data.clips.length > 0) {
+          renderOutputClips(data.clips, "Your Generated Clips");
+          if (scrollIntoView) {
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      } catch (err) {
+        console.log('Error fetching recent clips:', err);
+      }
+    }
+
+    function scrollToMyClips() {
+      const section = document.getElementById('resultsSection');
+      section.classList.remove('hidden');
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleFrameworkMenu() {
+      const drawer = document.getElementById('frameworkDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function setFramework(mode, label, el) {
+      activeFramework = mode;
+      document.querySelectorAll('.fw-opt').forEach(b => {
+        b.classList.remove('bg-craft-border/70', 'font-semibold', 'text-white');
+        b.classList.add('text-slate-400');
+      });
+      el.classList.add('bg-craft-border/70', 'font-semibold', 'text-white');
+      el.classList.remove('text-slate-400');
+      document.getElementById('sidebarFrameworkName').innerText = label.split(' ')[1] || '9:16';
+    }
+
+    function toggleSettingsModal() {
+      const m = document.getElementById('settingsModal');
+      m.classList.toggle('hidden');
+      lucide.createIcons();
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const fd = new FormData();
+      fd.append('file', file);
+
+      const statusEl = document.getElementById('uploadStatusText');
+      statusEl.innerText = `Uploading ${file.name}...`;
+      statusEl.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.status === 'success') {
+          uploadedFilePath = data.file_path;
+          statusEl.innerText = `✓ Ready: ${file.name}`;
+          document.getElementById('ytInput').value = '';
+          document.getElementById('ytInput').placeholder = `Selected file: ${file.name}`;
+        }
+      } catch (err) {
+        alert('File upload failed: ' + err.message);
+      }
+    }
+
+    function clearAllResults() {
+      document.getElementById('clipsGrid').innerHTML = '';
+      document.getElementById('resultsSection').classList.add('hidden');
+      document.getElementById('outputCountBadge').innerText = '0 Clips';
+    }
+
+    async function startGeneration() {
+      const ytUrl = document.getElementById('ytInput').value.trim();
+      if (!ytUrl && !uploadedFilePath) {
+        alert('Please paste a YouTube video link or upload a local video file!');
+        return;
+      }
+
+      const generateBtn = document.getElementById('mainGenerateBtn');
+      generateBtn.disabled = true;
+      generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      const progressBox = document.getElementById('liveProgressContainer');
+      const progressBar = document.getElementById('progressBarFill');
+      const progressPercentage = document.getElementById('progressPercentage');
+      const progressTitle = document.getElementById('progressTitle');
+      const progressSub = document.getElementById('progressSub');
+
+      progressBox.classList.remove('hidden');
+      progressBar.style.width = '8%';
+      progressPercentage.innerText = '8%';
+      progressTitle.innerText = 'INITIALIZING ENGINE...';
+      progressSub.innerText = 'Connecting to video source on NVIDIA RTX 3050';
+
+      const formData = new FormData();
+      if (ytUrl) formData.append('youtube_url', ytUrl);
+      if (uploadedFilePath) formData.append('local_file_path', uploadedFilePath);
+      formData.append('layout_mode', activeFramework);
+      formData.append('add_subtitles', true);
+      formData.append('clip_count', document.getElementById('modalClipCount').value);
+      formData.append('min_duration', document.getElementById('modalMinDur').value);
+      formData.append('max_duration', document.getElementById('modalMaxDur').value);
+      formData.append('whisper_model', document.getElementById('modalWhisperModel').value);
+      formData.append('gemini_key', document.getElementById('modalApiKey').value);
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          body: formData
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.substring(6).trim();
+              if (!jsonStr) continue;
+              const data = JSON.parse(jsonStr);
+
+              if (data.error) {
+                alert('Generation Error: ' + data.error);
+                progressBox.classList.add('hidden');
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+              }
+
+              if (data.percent !== undefined) {
+                progressBar.style.width = data.percent + '%';
+                progressPercentage.innerText = data.percent + '%';
+              }
+              if (data.message) {
+                progressSub.innerText = data.message;
+              }
+
+              if (data.done && data.clips) {
+                renderOutputClips(data.clips, data.source_title);
+                progressBox.classList.add('hidden');
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // Smooth scroll to output section
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+          }
+        }
+
+      } catch (err) {
+        alert('Pipeline execution error: ' + err.message);
+        progressBox.classList.add('hidden');
+        generateBtn.disabled = false;
+        generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function renderOutputClips(clips, sourceTitle) {
+      const resultsSection = document.getElementById('resultsSection');
+      const grid = document.getElementById('clipsGrid');
+      const countBadge = document.getElementById('outputCountBadge');
+
+      resultsSection.classList.remove('hidden');
+      grid.innerHTML = '';
+      countBadge.innerText = `${clips.length} Clips Ready`;
+      window.cachedClips = clips;
+
+      clips.forEach((clip, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-craft-card border border-craft-border rounded-2xl p-4 shadow-2xl space-y-4 glow-card relative";
+
+        const seo = clip.seo || {
+          titles: [`${clip.title} 🔥 #shorts`],
+          description: "Watch till the end! Subscribe for more daily viral shorts 👇",
+          hashtags: ["#shorts", "#viral", "#youtubeshorts"],
+          viral_tip: "Pin a comment with an open question to double engagement."
+        };
+
+        const titlesHtml = (seo.titles || []).map(t => `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-craft-input border border-craft-border hover:border-pink-500/40 transition">
+            <span class="text-xs text-slate-200 font-semibold truncate max-w-[240px]" title="${t}">${t}</span>
+            <button onclick="copyText('${t.replace(/'/g, "\\'")}', this)" class="text-[11px] text-pink-400 hover:text-pink-300 font-bold px-2 py-0.5 rounded bg-pink-500/10 hover:bg-pink-500/20 transition flex items-center gap-1 cursor-pointer">
+              <i data-lucide="copy" class="w-3 h-3"></i> Copy
+            </button>
+          </div>
+        `).join('');
+
+        const tagsHtml = (seo.hashtags || []).map(tag => `
+          <span onclick="copyText('${tag}', this)" class="cursor-pointer text-[10px] bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30 transition">
+            ${tag}
+          </span>
+        `).join('');
+
+        const allTagsStr = (seo.hashtags || []).join(' ');
+        const cleanDesc = (seo.description || '').replace(/'/g, "\\'");
+
+        card.innerHTML = `
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-pink-500/20 text-pink-400 text-xs font-bold flex items-center justify-center">
+                #${idx + 1}
+              </span>
+              <h4 class="text-sm font-bold text-white truncate max-w-[190px]" title="${clip.title}">${clip.title}</h4>
+            </div>
+            <span class="text-xs font-extrabold bg-gradient-to-r from-pink-500 to-purple-600 text-white px-2.5 py-0.5 rounded-full shadow-sm">
+              🔥 ${clip.score}% Virality
+            </span>
+          </div>
+
+          <!-- Video Player (Working Browser Playback) -->
+          <div class="rounded-xl overflow-hidden bg-black border border-craft-border aspect-[9/16] max-h-[380px] flex items-center justify-center relative shadow-lg">
+            <video 
+              src="${clip.video_url}" 
+              controls 
+              preload="metadata"
+              playsinline
+              class="w-full h-full object-contain"
+            ></video>
+          </div>
+
+          <!-- Spoken Hook Quote -->
+          <div class="bg-craft-input/80 rounded-xl p-3 border-l-2 border-craft-magenta text-xs space-y-1">
+            <p class="text-[10px] font-bold text-craft-magenta uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="quote" class="w-3 h-3"></i> Spoken Opening Hook
+            </p>
+            <p class="text-slate-200 italic font-medium">"${clip.hook || 'High retention moment'}"</p>
+          </div>
+
+          <!-- AI Shorts SEO Agent Drawer -->
+          <div class="bg-craft-input/90 rounded-xl p-3 border border-purple-500/30 space-y-3 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-purple-300 flex items-center gap-1.5">
+                <i data-lucide="bot" class="w-4 h-4 text-purple-400"></i>
+                Shorts SEO Agent
+              </span>
+              <span class="text-[9px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full font-semibold">Gemini 3.8</span>
+            </div>
+
+            <!-- Viral Titles -->
+            <div class="space-y-1">
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">High CTR Titles</p>
+              <div class="space-y-1">
+                ${titlesHtml}
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <span>Description</span>
+                <button onclick="copyText('${cleanDesc}', this)" class="text-pink-400 hover:text-pink-300 flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                </button>
+              </div>
+              <div class="bg-craft-card p-2 rounded-lg text-[11px] text-slate-300 whitespace-pre-line border border-craft-border leading-relaxed max-h-24 overflow-y-auto">
+                ${seo.description || ''}
+              </div>
+            </div>
+
+            <!-- Hashtags -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <span>Hashtags</span>
+                <button onclick="copyText('${allTagsStr}', this)" class="text-purple-400 hover:text-purple-300 flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="copy" class="w-3 h-3"></i> Copy All
+                </button>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                ${tagsHtml}
+              </div>
+            </div>
+
+            <!-- Master 1-Click Copy Package -->
+            <button onclick="copyAllYouTubePackage(${idx}, this)" class="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md cursor-pointer transition">
+              <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+              <span>Copy Everything for YouTube Shorts</span>
+            </button>
+          </div>
+
+          <!-- Bottom Actions: Duration & Direct Download Button -->
+          <div class="pt-2 border-t border-craft-border flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-semibold">⏱️ ${clip.duration}</span>
+            <a 
+              href="${clip.download_url}" 
+              download="${clip.filename}"
+              class="btn-clipcraft text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-md cursor-pointer"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Download MP4</span>
+            </a>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<span class="text-emerald-400 font-bold">Copied! ✓</span>`;
+        setTimeout(() => { btn.innerHTML = orig; }, 1600);
+      });
+    }
+
+    function copyAllYouTubePackage(idx, btn) {
+      if (!window.cachedClips || !window.cachedClips[idx]) return;
+      const c = window.cachedClips[idx];
+      const s = c.seo || {};
+      const title = (s.titles && s.titles[0]) ? s.titles[0] : c.title;
+      const desc = s.description || "";
+      const tags = (s.hashtags || []).join(" ");
+
+      const fullText = `${title}\n\n${desc}\n\n${tags}`;
+      navigator.clipboard.writeText(fullText).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> <span class="text-emerald-300">Ready to Paste into YouTube Studio! ✓</span>`;
+        lucide.createIcons();
+        setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>

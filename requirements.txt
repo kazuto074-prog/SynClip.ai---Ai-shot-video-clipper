@@ -1,0 +1,11 @@
+fastapi>=0.100.0
+uvicorn>=0.23.0
+python-multipart>=0.0.6
+yt-dlp>=2026.8.19
+faster-whisper>=1.2.1
+ctranslate2>=4.8.2
+opencv-python>=5.0.0
+google-genai>=2.29.0
+imageio-ffmpeg>=0.6.0
+torch
+torchaudio
